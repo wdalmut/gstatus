@@ -1,0 +1,18 @@
+language: php
+php:
+    - 5.5
+    - 5.4
+branches:
+    only:
+        - master
+        - develop
+
+before_script:
+    - composer selfupdate
+    - composer install
+
+script:
+    - vendor/bin/phpspec run
+
+notifications:
+    irc: "irc.freenode.org#gianarb-dev"
