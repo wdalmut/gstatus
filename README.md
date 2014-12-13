@@ -5,16 +5,43 @@ Little library to manage [Github Status API](https://github.com/blog/1935-see-re
 ```php
 <?php
 use Gstatus\Client;
+use Gstatus\Request\Status;
+use Zend\Http\Client as HttpClient;
+
 require 'vendor/autoload.php';
 
-$client = new Client("your-token");
-$response = $client->send("gianarb", "stdlib", "1ab5f09eb4e736890b17b7abdb80ed3e368a478f", [
+$status = new Status("gianarb", "gstatus");
+$status->setStatusFor("1ab5f09eb4e736890b17b7abdb80ed3e368a478f", [
     "state" =>  "failure",
     "target_url" => "http://gianarb.it",
     "description" => "D'oh!",
     "context" => "my/test",
 ]);
-var_dump($response->getBody());
+
+$client = new Client($token);
+$client->setHttpClient(new HttpClient());
+
+$response = $client->send($status);
+
+if ($response->getStatusCode() != 200) {
+    throw new \RuntimeException("D'oh!!");
+}
+```
+
+With the DiC
+
+```php
+<?php
+$status = new Status("gianarb", "gstatus");
+$status->setStatusFor("1ab5f09eb4e736890b17b7abdb80ed3e368a478f", [
+    "state" =>  "failure",
+    "target_url" => "http://gianarb.it",
+    "description" => "D'oh!",
+    "context" => "my/test",
+]);
+
+$client = $container->get("github.client");
+$client->send($status);
 ```
 
 ## Install
